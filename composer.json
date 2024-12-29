@@ -1,0 +1,19 @@
+{
+    "name": "ilutov/simple-php",
+    "autoload": {
+        "psr-4": {
+            "SimplePhp\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
