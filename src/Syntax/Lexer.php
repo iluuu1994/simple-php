@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplePhp;
+namespace SimplePhp\Syntax;
 
 class Lexer
 {
@@ -46,6 +46,7 @@ class Lexer
         return $this->lexKeywords()
             ?? $this->lexInteger()
             ?? $this->lexSymbols()
+            ?? $this->lexIdentifier()
             ?? throw new \Exception('Unexpected character ' . $this->code[$this->position]);
     }
 
@@ -58,24 +59,32 @@ class Lexer
 
     private function lexKeywords(): ?Token
     {
-        if (substr_compare($this->code, "return", $this->position, strlen("return")) === 0) {
-            $this->position += strlen("return");
-            return new Token(TokenKind::Return_);
+        $keywords = [['return', TokenKind::Return_]];
+
+        foreach ($keywords as [$string, $kind]) {
+            if (substr_compare($this->code, $string, $this->position, strlen($string)) === 0
+             /* Keywords must end with a non-identifier character. */
+             && ($this->position + strlen($string) >= strlen($this->code)
+              || !$this->isIdentifierChar($this->code[$this->position + strlen($string)]))) {
+                $this->position += strlen($string);
+                return new Token($kind);
+            }
         }
+
         return null;
     }
 
     private function lexInteger(): ?Token
     {
         $char = $this->code[$this->position];
-        if (!($char >= '1' && $char <= '9')) {
+        if (!($char >= '0' && $char <= '9')) {
             return null;
         }
         $start = $this->position;
         $this->position++;
-        while (true) {
+        while ($this->position < strlen($this->code)) {
             $char = $this->code[$this->position];
-            if (!($char >= '1' && $char <= '9')) {
+            if (!($char >= '0' && $char <= '9')) {
                 break;
             }
             $this->position++;
@@ -91,5 +100,25 @@ class Lexer
             return new Token(TokenKind::Semicolon);
         }
         return null;
+    }
+
+    private function lexIdentifier(): ?Token
+    {
+        if (!$this->isIdentifierChar($this->code[$this->position])) {
+            return null;
+        }
+        $start = $this->position++;
+        while ($this->position < strlen($this->code) && $this->isIdentifierChar($this->code[$this->position])) {
+            $this->position++;
+        }
+        return new IdentifierToken(substr($this->code, $start, $this->position - $start));
+    }
+
+    private function isIdentifierChar(string $char): bool
+    {
+        $lower = strtolower($char);
+        return ($lower >= 'a' && $lower <= 'z')
+            || ($lower >= '0' && $lower <= '9')
+            || $lower == '_';
     }
 }

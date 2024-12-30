@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplePhp;
+namespace SimplePhp\Syntax;
 
 class Token
 {
