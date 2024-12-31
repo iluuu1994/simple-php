@@ -1,7 +1,16 @@
 <?php
 
 use SimplePhp\Graph\Mermaid;
+use SimplePhp\Ir\DataNode;
 use SimplePhp\Syntax\Parser;
+
+beforeAll(function () {
+    DataNode::$enablePeepholeOptimization = false;
+});
+
+afterAll(function () {
+    DataNode::$enablePeepholeOptimization = true;
+});
 
 test('parser', function () {
     $mermaid = new Mermaid();

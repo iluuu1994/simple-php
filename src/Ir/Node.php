@@ -42,6 +42,25 @@ abstract class Node
         return $this->inputs[$i];
     }
 
+    public function kill(): void
+    {
+        assert(!$this->isUsed());
+
+        foreach ($this->inputs as $input) {
+            if ($input !== null) {
+                $input->removeOutput($this);
+            }
+        }
+    }
+
+    public function removeOutput(Node $node): void
+    {
+        $this->outputs = array_values(array_filter($this->outputs, fn ($output) => $output !== $node));
+        if (!$this->isUsed()) {
+            $this->kill();
+        }
+    }
+
     public function isUsed(): bool
     {
         return count($this->outputs) !== 0;

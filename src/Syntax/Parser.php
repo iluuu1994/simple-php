@@ -17,8 +17,9 @@ use SimplePhp\UnexpectedError;
 
 class Parser
 {
+    public static ?StartNode $start = null;
+
     private Lexer $lexer;
-    private ?StartNode $start = null;
     private ?ControlNode $ctrl = null;
 
     public function __construct(string $code)
@@ -30,19 +31,19 @@ class Parser
     public function parse(): StartNode
     {
         $start = new StartNode();
-        $this->start = $start;
-        $this->ctrl = $this->start;
-        $node = $this->parseProgram();
+        self::$start = $start;
+        $this->ctrl = $start;
+        $this->parseProgram();
         $this->consume(TokenKind::Eof);
         return $start;
     }
 
-    private function parseProgram(): Node
+    private function parseProgram(): void
     {
-        return $this->parseStatement();
+        $this->parseStatement();
     }
 
-    private function parseStatement(): Node
+    private function parseStatement(): void
     {
         $current = $this->lexer->current();
         if ($current->kind === TokenKind::Return_) {
@@ -51,7 +52,6 @@ class Parser
             $this->consume(TokenKind::Semicolon);
             $result = new ReturnNode($this->getCtrl(), $expr);
             $this->ctrl = null;
-            return $result;
         } else {
             $this->unexpectedToken();
         }
@@ -69,10 +69,10 @@ class Parser
             $current = $this->lexer->current();
             if ($current->kind === TokenKind::Plus) {
                 $this->lexer->next();
-                $lhs = new AddNode($lhs, $this->parseMulDiv());
+                $lhs = (new AddNode($lhs, $this->parseMulDiv()))->peephole();
             } else if ($current->kind === TokenKind::Minus) {
                 $this->lexer->next();
-                $lhs = new SubNode($lhs, $this->parseMulDiv());
+                $lhs = (new SubNode($lhs, $this->parseMulDiv()))->peephole();
             } else {
                 break;
             }
@@ -87,10 +87,10 @@ class Parser
             $current = $this->lexer->current();
             if ($current->kind === TokenKind::Asterisk) {
                 $this->lexer->next();
-                $lhs = new MulNode($lhs, $this->parseTerm());
+                $lhs = (new MulNode($lhs, $this->parseTerm()))->peephole();
             } else if ($current->kind === TokenKind::Slash) {
                 $this->lexer->next();
-                $lhs = new DivNode($lhs, $this->parseTerm());
+                $lhs = (new DivNode($lhs, $this->parseTerm()))->peephole();
             } else {
                 break;
             }
@@ -104,7 +104,7 @@ class Parser
         if ($current->kind === TokenKind::Integer) {
             assert($current instanceof IntegerToken);
             $this->lexer->next();
-            return new ConstantNode($this->start ?? throw new UnexpectedError(), $current->value);
+            return (new ConstantNode(self::$start ?? throw new UnexpectedError(), $current->value))->peephole();
         } else if ($current->kind === TokenKind::ParenLeft) {
             $this->lexer->next();
             $expr = $this->parseExpression();
@@ -113,7 +113,7 @@ class Parser
         } else if ($current->kind === TokenKind::Minus) {
             $this->lexer->next();
             $expr = $this->parseTerm();
-            return new NegNode($expr);
+            return (new NegNode($expr))->peephole();
         } else {
             $this->unexpectedToken();
         }
@@ -132,6 +132,11 @@ class Parser
     {
         $current = $this->lexer->current();
         throw new \Exception('Unexpected token ' . $current->kind->name);
+    }
+
+    public static function getStart(): StartNode
+    {
+        return self::$start ?? throw new UnexpectedError('No start node');
     }
 
     private function getCtrl(): ControlNode
