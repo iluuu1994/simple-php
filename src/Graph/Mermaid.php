@@ -18,7 +18,7 @@ class Mermaid
         $edges = '';
 
         while (count($worklist)) {
-            $node = array_pop($worklist);
+            $node = array_shift($worklist);
 
             if ($node instanceof DataNode) {
                 $dataNodes .= '    ' . $node->id . '[' . $node . "]\n";
