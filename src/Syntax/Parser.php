@@ -99,7 +99,7 @@ class Parser
         $this->lexer->next();
     }
 
-    private function unexpectedToken(): void
+    private function unexpectedToken(): never
     {
         $current = $this->lexer->current();
         throw new \Exception('Unexpected token ' . $current->kind->name);
