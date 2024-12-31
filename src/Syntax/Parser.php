@@ -8,6 +8,7 @@ use SimplePhp\Ir\ControlNode;
 use SimplePhp\Ir\DataNode;
 use SimplePhp\Ir\DivNode;
 use SimplePhp\Ir\MulNode;
+use SimplePhp\Ir\NegNode;
 use SimplePhp\Ir\Node;
 use SimplePhp\Ir\ReturnNode;
 use SimplePhp\Ir\StartNode;
@@ -109,6 +110,10 @@ class Parser
             $expr = $this->parseExpression();
             $this->consume(TokenKind::ParenRight);
             return $expr;
+        } else if ($current->kind === TokenKind::Minus) {
+            $this->lexer->next();
+            $expr = $this->parseTerm();
+            return new NegNode($expr);
         } else {
             $this->unexpectedToken();
         }

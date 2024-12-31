@@ -96,7 +96,7 @@ test('parser', function () {
       3 --> 4
     MERMAID);
 
-    $node = (new Parser('return 1 + 2 * 3 - 4 / 5;'))->parse();
+    $node = (new Parser('return 1 + 2 * 3 - 4 / -5;'))->parse();
     expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
     graph TD
       subgraph Data
@@ -107,22 +107,24 @@ test('parser', function () {
         7[Constant 5]
         5[Add]
         4[Mul]
-        8[Div]
-        9[Sub]
+        9[Div]
+        8[Neg]
+        10[Sub]
       end
       subgraph Control
         0[Start]
-        10[Return]
+        11[Return]
       end
-      0 --> 10
-      9 --> 10
+      0 --> 11
+      10 --> 11
       1 --> 5
       4 --> 5
       2 --> 4
       3 --> 4
-      6 --> 8
-      7 --> 8
-      5 --> 9
+      6 --> 9
       8 --> 9
+      7 --> 8
+      5 --> 10
+      9 --> 10
     MERMAID);
 });
