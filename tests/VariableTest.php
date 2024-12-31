@@ -3,22 +3,22 @@
 use SimplePhp\Graph\Mermaid;
 use SimplePhp\Syntax\Parser;
 
-describe('peephole', function () {
-    test('arithmetics', function () {
+describe('variable', function () {
+    test('basic', function () {
         $mermaid = new Mermaid();
 
-        $node = (new Parser('{ return 1 + 2 * 3 - 4 / -2; }'))->parse();
+        $node = (new Parser('{ var x = 1; var y = 2; return x + y; }'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
-            15[Constant 9]
+            4[Constant 3]
           end
           subgraph Control
             0[Start]
-            16[Return]
+            5[Return]
           end
-          0 --> 16
-          15 --> 16
+          0 --> 5
+          4 --> 5
         MERMAID);
     });
 });

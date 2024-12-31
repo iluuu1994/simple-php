@@ -61,7 +61,10 @@ class Lexer
 
     private function lexKeywords(): ?Token
     {
-        $keywords = [['return', TokenKind::Return_]];
+        $keywords = [
+            ['return', TokenKind::Return_],
+            ['var', TokenKind::Var],
+        ];
 
         foreach ($keywords as [$string, $kind]) {
             if (substr_compare($this->code, $string, $this->position, strlen($string)) === 0
@@ -104,6 +107,9 @@ class Lexer
             '*' => TokenKind::Asterisk,
             '(' => TokenKind::ParenLeft,
             ')' => TokenKind::ParenRight,
+            '{' => TokenKind::CurlyLeft,
+            '}' => TokenKind::CurlyRight,
+            '=' => TokenKind::Equals,
         ];
         $char = $this->code[$this->position];
         if (!isset($symbols[$char])) {

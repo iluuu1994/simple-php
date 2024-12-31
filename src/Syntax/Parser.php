@@ -13,6 +13,7 @@ use SimplePhp\Ir\Node;
 use SimplePhp\Ir\ReturnNode;
 use SimplePhp\Ir\StartNode;
 use SimplePhp\Ir\SubNode;
+use SimplePhp\Ir\SymbolTable;
 use SimplePhp\UnexpectedError;
 
 class Parser
@@ -20,12 +21,14 @@ class Parser
     public static ?StartNode $start = null;
 
     private Lexer $lexer;
+    private SymbolTable $symbolTable;
     private ?ControlNode $ctrl = null;
 
     public function __construct(string $code)
     {
         Node::resetIds();
         $this->lexer = new Lexer($code);
+        $this->symbolTable = new SymbolTable();
     }
 
     public function parse(): StartNode
@@ -40,7 +43,22 @@ class Parser
 
     private function parseProgram(): void
     {
-        $this->parseStatement();
+        $this->parseBlock();
+    }
+
+    private function parseBlock(): void
+    {
+        $this->consume(TokenKind::CurlyLeft);
+        $this->symbolTable->pushScope();
+        while (true) {
+            $current = $this->lexer->current();
+            if ($current->kind === TokenKind::CurlyRight) {
+                break;
+            }
+            $this->parseStatement();
+        }
+        $this->symbolTable->popScope();
+        $this->consume(TokenKind::CurlyRight);
     }
 
     private function parseStatement(): void
@@ -50,11 +68,29 @@ class Parser
             $this->lexer->next();
             $expr = $this->parseExpression();
             $this->consume(TokenKind::Semicolon);
-            $result = new ReturnNode($this->getCtrl(), $expr);
+            /* FIXME: This looks a bit weird, but the constructor links itself
+             * into the graph. Can we make this API less confusing? */
+            new ReturnNode($this->getCtrl(), $expr);
             $this->ctrl = null;
+        } else if ($current->kind === TokenKind::CurlyLeft) {
+            $this->parseBlock();
+        } else if ($current->kind === TokenKind::Var) {
+            $this->parseVarDecl();
         } else {
             $this->unexpectedToken();
         }
+    }
+
+    private function parseVarDecl(): void
+    {
+        $this->consume(TokenKind::Var);
+        $identifier = $this->consume(TokenKind::Identifier);
+        assert($identifier instanceof IdentifierToken);
+        $this->consume(TokenKind::Equals);
+        $expr = $this->parseExpression();
+        $this->consume(TokenKind::Semicolon);
+
+        $this->symbolTable->declare($identifier->name, $expr);
     }
 
     private function parseExpression(): DataNode
@@ -114,18 +150,23 @@ class Parser
             $this->lexer->next();
             $expr = $this->parseTerm();
             return (new NegNode($expr))->peephole();
+        } else if ($current->kind === TokenKind::Identifier) {
+            $this->lexer->next();
+            assert($current instanceof IdentifierToken);
+            return $this->symbolTable->lookup($current->name);
         } else {
             $this->unexpectedToken();
         }
     }
 
-    private function consume(TokenKind $kind): void
+    private function consume(TokenKind $kind): Token
     {
         $current = $this->lexer->current();
         if ($current->kind !== $kind) {
             throw new \Exception('Unexpected token ' . $current->kind->name . ', expected ' . $kind->name);
         }
         $this->lexer->next();
+        return $current;
     }
 
     private function unexpectedToken(): never
