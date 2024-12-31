@@ -16,5 +16,13 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
+    },
+    "scripts": {
+        "phpstan": ["@php vendor/bin/phpstan analyze"],
+        "pest": ["@php vendor/bin/pest"],
+        "test": [
+            "@composer phpstan",
+            "@composer pest"
+        ]
     }
 }

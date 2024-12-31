@@ -4,7 +4,7 @@ namespace SimplePhp\Ir;
 
 abstract class Node
 {
-    private static $counter = 0;
+    private static int $counter = 0;
 
     public int $id;
 

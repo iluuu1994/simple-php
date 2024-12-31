@@ -5,6 +5,7 @@ namespace SimplePhp\Syntax;
 use SimplePhp\Ir\AddNode;
 use SimplePhp\Ir\ConstantNode;
 use SimplePhp\Ir\ControlNode;
+use SimplePhp\Ir\DataNode;
 use SimplePhp\Ir\Node;
 use SimplePhp\Ir\ReturnNode;
 use SimplePhp\Ir\StartNode;
@@ -20,7 +21,7 @@ class Parser
         $this->lexer = new Lexer($code);
     }
 
-    public function parse(): Node
+    public function parse(): StartNode
     {
         $this->start = new StartNode();
         $this->ctrl = $this->start;
@@ -31,11 +32,7 @@ class Parser
 
     private function parseProgram(): Node
     {
-        $node = $this->parseStatement();
-        if ($node === null) {
-            throw new \Exception('Expected statement');
-        }
-        return $node;
+        return $this->parseStatement();
     }
 
     private function parseStatement(): Node
@@ -53,12 +50,12 @@ class Parser
         }
     }
 
-    private function parseExpression(): Node
+    private function parseExpression(): DataNode
     {
         return $this->parseAddSub();
     }
 
-    private function parseAddSub(): Node
+    private function parseAddSub(): DataNode
     {
         $term = $this->parseTerm();
         $current = $this->lexer->current();
@@ -72,7 +69,7 @@ class Parser
         }
     }
 
-    private function parseTerm(): Node
+    private function parseTerm(): DataNode
     {
         $current = $this->lexer->current();
         if ($current->kind === TokenKind::Integer) {
