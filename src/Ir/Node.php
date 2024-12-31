@@ -11,7 +11,7 @@ abstract class Node
     /** @var list<Node|null> */
     public array $inputs;
 
-    /** @var list<Node|null> */
+    /** @var list<Node> */
     public array $outputs;
 
     /** @param list<Node|null> $inputs */

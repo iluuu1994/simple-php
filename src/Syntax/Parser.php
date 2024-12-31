@@ -9,6 +9,7 @@ use SimplePhp\Ir\DataNode;
 use SimplePhp\Ir\Node;
 use SimplePhp\Ir\ReturnNode;
 use SimplePhp\Ir\StartNode;
+use SimplePhp\UnexpectedError;
 
 class Parser
 {
@@ -23,11 +24,12 @@ class Parser
 
     public function parse(): StartNode
     {
-        $this->start = new StartNode();
+        $start = new StartNode();
+        $this->start = $start;
         $this->ctrl = $this->start;
         $node = $this->parseProgram();
         $this->expectTokenKind(TokenKind::Eof);
-        return $this->start;
+        return $start;
     }
 
     private function parseProgram(): Node
@@ -42,7 +44,7 @@ class Parser
             $this->lexer->next();
             $expr = $this->parseExpression();
             $this->consume(TokenKind::Semicolon);
-            $result = new ReturnNode($this->ctrl, $expr);
+            $result = new ReturnNode($this->getCtrl(), $expr);
             $this->ctrl = null;
             return $result;
         } else {
@@ -75,7 +77,7 @@ class Parser
         if ($current->kind === TokenKind::Integer) {
             assert($current instanceof IntegerToken);
             $this->lexer->next();
-            return new ConstantNode($this->start, $current->value);
+            return new ConstantNode($this->start ?? throw new UnexpectedError(), $current->value);
         } else {
             $this->unexpectedToken();
         }
@@ -100,5 +102,10 @@ class Parser
     {
         $current = $this->lexer->current();
         throw new \Exception('Unexpected token ' . $current->kind->name);
+    }
+
+    private function getCtrl(): ControlNode
+    {
+        return $this->ctrl ?? throw new UnexpectedError('No ctrl node');
     }
 }

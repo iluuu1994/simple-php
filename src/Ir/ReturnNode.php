@@ -4,7 +4,7 @@ namespace SimplePhp\Ir;
 
 class ReturnNode extends ControlNode
 {
-    public function __construct(Node $ctrl, DataNode $value)
+    public function __construct(ControlNode $ctrl, DataNode $value)
     {
         parent::__construct([$ctrl, $value]);
     }
