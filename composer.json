@@ -1,12 +1,14 @@
 {
     "name": "ilutov/simple-php",
+    "description": "Sea of nodes implementation in PHP",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "SimplePhp\\": "src/"
         }
     },
     "require": {
-        "php": ">=8.4"
+        "php": ">=8.3"
     },
     "require-dev": {
         "pestphp/pest": "^3.7",
