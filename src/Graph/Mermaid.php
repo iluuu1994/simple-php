@@ -28,15 +28,19 @@ class Mermaid
             }
 
             foreach ($node->outputs as $output) {
-                /* Skip fake data edges. */
-                if (!($node instanceof StartNode && $output instanceof DataNode)) {
-                    $edges .= '  ' . $node->id . ' --> ' . $output->id . "\n";
-                }
-
                 if (!isset($visited[$output])) {
                     $visited[$output] = true;
                     $worklist[] = $output;
                 }
+            }
+
+            /* For edges, iterate inputs rather than outputs to maintain input order. */
+            foreach ($node->inputs as $input) {
+                /* Skip fake data edges. */
+                if ($input && !($input instanceof StartNode && $node instanceof DataNode)) {
+                    $edges .= '  ' . $input->id . ' --> ' . $node->id . "\n";
+                }
+
             }
         }
 

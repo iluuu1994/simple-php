@@ -43,11 +43,13 @@ class Lexer
         if ($this->position >= strlen($this->code)) {
             return new Token(TokenKind::Eof);
         }
-        return $this->lexKeywords()
+        $result = $this->lexKeywords()
             ?? $this->lexInteger()
             ?? $this->lexSymbols()
             ?? $this->lexIdentifier()
             ?? throw new \Exception('Unexpected character ' . $this->code[$this->position]);
+
+        return $result;
     }
 
     private function skipWhitespace(): void
@@ -100,6 +102,8 @@ class Lexer
             '-' => TokenKind::Minus,
             '/' => TokenKind::Slash,
             '*' => TokenKind::Asterisk,
+            '(' => TokenKind::ParenLeft,
+            ')' => TokenKind::ParenRight,
         ];
         $char = $this->code[$this->position];
         if (!isset($symbols[$char])) {

@@ -6,9 +6,12 @@ use SimplePhp\Ir\AddNode;
 use SimplePhp\Ir\ConstantNode;
 use SimplePhp\Ir\ControlNode;
 use SimplePhp\Ir\DataNode;
+use SimplePhp\Ir\DivNode;
+use SimplePhp\Ir\MulNode;
 use SimplePhp\Ir\Node;
 use SimplePhp\Ir\ReturnNode;
 use SimplePhp\Ir\StartNode;
+use SimplePhp\Ir\SubNode;
 use SimplePhp\UnexpectedError;
 
 class Parser
@@ -19,6 +22,7 @@ class Parser
 
     public function __construct(string $code)
     {
+        Node::resetIds();
         $this->lexer = new Lexer($code);
     }
 
@@ -28,7 +32,7 @@ class Parser
         $this->start = $start;
         $this->ctrl = $this->start;
         $node = $this->parseProgram();
-        $this->expectTokenKind(TokenKind::Eof);
+        $this->consume(TokenKind::Eof);
         return $start;
     }
 
@@ -59,16 +63,38 @@ class Parser
 
     private function parseAddSub(): DataNode
     {
-        $term = $this->parseTerm();
-        $current = $this->lexer->current();
-        if ($current->kind === TokenKind::Plus) {
-            $this->lexer->next();
-            return new AddNode($term, $this->parseTerm());
-        } else if ($current->kind === TokenKind::Minus) {
-            throw new \Exception('Unimplemented');
-        } else {
-            return $term;
+        $lhs = $this->parseMulDiv();
+        while (true) {
+            $current = $this->lexer->current();
+            if ($current->kind === TokenKind::Plus) {
+                $this->lexer->next();
+                $lhs = new AddNode($lhs, $this->parseMulDiv());
+            } else if ($current->kind === TokenKind::Minus) {
+                $this->lexer->next();
+                $lhs = new SubNode($lhs, $this->parseMulDiv());
+            } else {
+                break;
+            }
         }
+        return $lhs;
+    }
+
+    private function parseMulDiv(): DataNode
+    {
+        $lhs = $this->parseTerm();
+        while (true) {
+            $current = $this->lexer->current();
+            if ($current->kind === TokenKind::Asterisk) {
+                $this->lexer->next();
+                $lhs = new MulNode($lhs, $this->parseTerm());
+            } else if ($current->kind === TokenKind::Slash) {
+                $this->lexer->next();
+                $lhs = new DivNode($lhs, $this->parseTerm());
+            } else {
+                break;
+            }
+        }
+        return $lhs;
     }
 
     private function parseTerm(): DataNode
@@ -78,18 +104,17 @@ class Parser
             assert($current instanceof IntegerToken);
             $this->lexer->next();
             return new ConstantNode($this->start ?? throw new UnexpectedError(), $current->value);
+        } else if ($current->kind === TokenKind::ParenLeft) {
+            $this->lexer->next();
+            $expr = $this->parseExpression();
+            $this->consume(TokenKind::ParenRight);
+            return $expr;
         } else {
             $this->unexpectedToken();
         }
     }
 
     private function consume(TokenKind $kind): void
-    {
-        $this->expectTokenKind($kind);
-        $this->lexer->next();
-    }
-
-    private function expectTokenKind(TokenKind $kind): void
     {
         $current = $this->lexer->current();
         if ($current->kind !== $kind) {

@@ -34,4 +34,24 @@ test('lexer', function () {
         new IntegerToken(2),
         new Token(TokenKind::Eof),
     ]);
+
+    expect((new Lexer('(1);'))->collect())->toEqual([
+        new Token(TokenKind::ParenLeft),
+        new IntegerToken(1),
+        new Token(TokenKind::ParenRight),
+        new Token(TokenKind::Semicolon),
+        new Token(TokenKind::Eof),
+    ]);
+
+    expect((new Lexer('1 - (2 - 3);'))->collect())->toEqual([
+        new IntegerToken(1),
+        new Token(TokenKind::Minus),
+        new Token(TokenKind::ParenLeft),
+        new IntegerToken(2),
+        new Token(TokenKind::Minus),
+        new IntegerToken(3),
+        new Token(TokenKind::ParenRight),
+        new Token(TokenKind::Semicolon),
+        new Token(TokenKind::Eof),
+    ]);
 });
