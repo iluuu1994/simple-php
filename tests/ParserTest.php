@@ -24,9 +24,9 @@ test('parser', function () {
     expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
     graph TD
       subgraph Data
-        5[Constant 42]
+        5[Constant 2]
         6[Add]
-        4[Constant 42]
+        4[Constant 1]
       end
       subgraph Control
         3[Start]

@@ -78,7 +78,7 @@ class Parser
         if ($current->kind === TokenKind::Integer) {
             assert($current instanceof IntegerToken);
             $this->lexer->next();
-            return new ConstantNode($this->start, 42);
+            return new ConstantNode($this->start, $current->value);
         } else {
             $this->unexpectedToken();
         }
