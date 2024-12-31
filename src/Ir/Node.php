@@ -42,10 +42,6 @@ abstract class Node
         return $this->inputs[$i];
     }
 
-    private function addOutput(Node $output): void
-    {
-    }
-
     public function isUsed(): bool
     {
         return count($this->outputs) !== 0;
