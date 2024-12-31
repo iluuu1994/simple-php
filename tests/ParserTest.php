@@ -4,8 +4,9 @@ use SimplePhp\Graph\Mermaid;
 use SimplePhp\Syntax\Parser;
 
 test('parser', function () {
-    $node = (new Parser('return 42;'))->parse();
     $mermaid = new Mermaid();
+
+    $node = (new Parser('return 42;'))->parse();
     expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
     graph TD
       subgraph Data
@@ -17,5 +18,23 @@ test('parser', function () {
       end
       0 --> 2
       1 --> 2
+    MERMAID);
+
+    $node = (new Parser('return 1 + 2;'))->parse();
+    expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
+    graph TD
+      subgraph Data
+        5[Constant 42]
+        6[Add]
+        4[Constant 42]
+      end
+      subgraph Control
+        3[Start]
+        7[Return]
+      end
+      3 --> 7
+      5 --> 6
+      6 --> 7
+      4 --> 6
     MERMAID);
 });

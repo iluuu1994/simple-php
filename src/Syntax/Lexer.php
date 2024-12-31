@@ -94,12 +94,19 @@ class Lexer
 
     private function lexSymbols(): ?Token
     {
+        $symbols = [
+            ';' => TokenKind::Semicolon,
+            '+' => TokenKind::Plus,
+            '-' => TokenKind::Minus,
+            '/' => TokenKind::Slash,
+            '*' => TokenKind::Asterisk,
+        ];
         $char = $this->code[$this->position];
-        if ($char === ';') {
-            $this->position++;
-            return new Token(TokenKind::Semicolon);
+        if (!isset($symbols[$char])) {
+            return null;
         }
-        return null;
+        $this->position++;
+        return new Token($symbols[$char]);
     }
 
     private function lexIdentifier(): ?Token

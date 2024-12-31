@@ -2,6 +2,7 @@
 
 namespace SimplePhp\Syntax;
 
+use SimplePhp\Ir\AddNode;
 use SimplePhp\Ir\ConstantNode;
 use SimplePhp\Ir\ControlNode;
 use SimplePhp\Ir\Node;
@@ -53,6 +54,25 @@ class Parser
     }
 
     private function parseExpression(): Node
+    {
+        return $this->parseAddSub();
+    }
+
+    private function parseAddSub(): Node
+    {
+        $term = $this->parseTerm();
+        $current = $this->lexer->current();
+        if ($current->kind === TokenKind::Plus) {
+            $this->lexer->next();
+            return new AddNode($term, $this->parseTerm());
+        } else if ($current->kind === TokenKind::Minus) {
+            throw new \Exception('Unimplemented');
+        } else {
+            return $term;
+        }
+    }
+
+    private function parseTerm(): Node
     {
         $current = $this->lexer->current();
         if ($current->kind === TokenKind::Integer) {

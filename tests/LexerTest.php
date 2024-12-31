@@ -27,4 +27,11 @@ test('lexer', function () {
         new IdentifierToken('returns'),
         new Token(TokenKind::Eof),
     ]);
+
+    expect((new Lexer('1 + 2'))->collect())->toEqual([
+        new IntegerToken(1),
+        new Token(TokenKind::Plus),
+        new IntegerToken(2),
+        new Token(TokenKind::Eof),
+    ]);
 });
