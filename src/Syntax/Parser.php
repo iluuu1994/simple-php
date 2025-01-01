@@ -77,8 +77,18 @@ class Parser
         } else if ($current->kind === TokenKind::Var) {
             $this->parseVarDecl();
         } else {
-            $this->unexpectedToken();
+            $this->parseExpressionStatement();
         }
+    }
+
+    private function parseExpressionStatement(): void
+    {
+        $identifier = $this->consume(TokenKind::Identifier);
+        assert($identifier instanceof IdentifierToken);
+        $this->consume(TokenKind::Equals);
+        $expr = $this->parseExpression();
+        $this->consume(TokenKind::Semicolon);
+        $this->symbolTable->update($identifier->name, $expr);
     }
 
     private function parseVarDecl(): void

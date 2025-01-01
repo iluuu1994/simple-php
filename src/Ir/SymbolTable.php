@@ -16,7 +16,12 @@ class SymbolTable
     public function popScope(): void
     {
         assert(!empty($this->scopes));
-        array_pop($this->scopes);
+        $scope = array_pop($this->scopes);
+        foreach ($scope as $node) {
+            if (!$node->isUsed()) {
+                $node->kill();
+            }
+        }
     }
 
     public function lookup(string $name): DataNode
@@ -39,5 +44,22 @@ class SymbolTable
             throw new \Exception("Redeclaration of $name");
         }
         $this->scopes[$i][$name] = $node;
+    }
+
+    public function update(string $name, DataNode $node): void
+    {
+        for ($i = count($this->scopes) - 1; $i >= 0; $i--) {
+            $scope = $this->scopes[$i];
+            if (isset($scope[$name])) {
+                $old = $this->scopes[$i][$name];
+                if (!$old->isUsed()) {
+                    $old->kill();
+                }
+                $this->scopes[$i][$name] = $node;
+                return;
+            }
+        }
+
+        throw new \Exception("Undeclared identifier $name");
     }
 }

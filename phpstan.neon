@@ -5,3 +5,8 @@ parameters:
 	paths:
 		- src
 		- tests
+	ignoreErrors:
+		-
+			message: '(^Call to an undefined method Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy::throws\(\)\.$)'
+			paths:
+				- tests/*
