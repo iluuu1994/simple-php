@@ -7,7 +7,7 @@ describe('variable', function () {
     test('basic', function () {
         $mermaid = new Mermaid();
 
-        $node = (new Parser('{ var x = 1; var y = 2; return x + y; }'))->parse();
+        $node = (new Parser('var x = 1; var y = 2; return x + y;'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data

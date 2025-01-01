@@ -48,17 +48,15 @@ class Parser
 
     private function parseBlock(): void
     {
-        $this->consume(TokenKind::CurlyLeft);
         $this->symbolTable->pushScope();
         while (true) {
             $current = $this->lexer->current();
-            if ($current->kind === TokenKind::CurlyRight) {
+            if ($current->kind === TokenKind::CurlyRight || $current->kind === TokenKind::Eof) {
                 break;
             }
             $this->parseStatement();
         }
         $this->symbolTable->popScope();
-        $this->consume(TokenKind::CurlyRight);
     }
 
     private function parseStatement(): void
@@ -73,7 +71,9 @@ class Parser
             new ReturnNode($this->getCtrl(), $expr);
             $this->ctrl = null;
         } else if ($current->kind === TokenKind::CurlyLeft) {
+            $this->consume(TokenKind::CurlyLeft);
             $this->parseBlock();
+            $this->consume(TokenKind::CurlyRight);
         } else if ($current->kind === TokenKind::Var) {
             $this->parseVarDecl();
         } else {

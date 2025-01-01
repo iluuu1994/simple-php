@@ -7,7 +7,7 @@ describe('peephole', function () {
     test('arithmetics', function () {
         $mermaid = new Mermaid();
 
-        $node = (new Parser('{ return 1 + 2 * 3 - 4 / -2; }'))->parse();
+        $node = (new Parser('return 1 + 2 * 3 - 4 / -2;'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data

@@ -16,7 +16,7 @@ describe('parser', function () {
     $mermaid = new Mermaid();
 
     test('basic', function () use ($mermaid) {
-        $node = (new Parser('{ return 42; }'))->parse();
+        $node = (new Parser('return 42;'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
@@ -32,7 +32,7 @@ describe('parser', function () {
     });
 
     test('sum', function () use ($mermaid) {
-        $node = (new Parser('{ return 1 + 2; }'))->parse();
+        $node = (new Parser('return 1 + 2;'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
@@ -52,7 +52,7 @@ describe('parser', function () {
     });
 
     test('parens', function () use ($mermaid) {
-        $node = (new Parser('{ return (1); }'))->parse();
+        $node = (new Parser('return (1);'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
@@ -68,7 +68,7 @@ describe('parser', function () {
     });
 
     test('left-associative arithmetics', function () use ($mermaid) {
-        $node = (new Parser('{ return 1 - 2 - 3; }'))->parse();
+        $node = (new Parser('return 1 - 2 - 3;'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
@@ -92,7 +92,7 @@ describe('parser', function () {
     });
 
     test('right-associative with parens', function () use ($mermaid) {
-        $node = (new Parser('{ return 1 - (2 - 3); }'))->parse();
+        $node = (new Parser('return 1 - (2 - 3);'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
@@ -116,7 +116,7 @@ describe('parser', function () {
     });
 
     test('complex', function () use ($mermaid) {
-        $node = (new Parser('{ return 1 + 2 * 3 - 4 / -5; }'))->parse();
+        $node = (new Parser('return 1 + 2 * 3 - 4 / -5;'))->parse();
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
