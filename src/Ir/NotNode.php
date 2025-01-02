@@ -6,7 +6,7 @@ use SimplePhp\Inference\BotType;
 use SimplePhp\Inference\ConstantType;
 use SimplePhp\Inference\Type;
 
-class NegNode extends DataNode
+class NotNode extends DataNode
 {
     public function __construct(DataNode $value)
     {
@@ -20,7 +20,7 @@ class NegNode extends DataNode
         $valueType = $value->infer();
 
         if ($valueType instanceof ConstantType) {
-            return new ConstantType(-$valueType->value);
+            return new ConstantType($valueType->value === 0 ? 1 : 0);
         }
 
         return new BotType();
@@ -35,6 +35,6 @@ class NegNode extends DataNode
     {
         $value = $this->inputs[0];
         assert($value instanceof DataNode);
-        return '-' . $value->print();
+        return '!(' . $value->print() . ')';
     }
 }

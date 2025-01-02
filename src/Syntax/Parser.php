@@ -2,7 +2,11 @@
 
 namespace SimplePhp\Syntax;
 
+use SimplePhp\Inference\Type;
 use SimplePhp\Ir\AddNode;
+use SimplePhp\Ir\ArgNode;
+use SimplePhp\Ir\CompKind;
+use SimplePhp\Ir\CompNode;
 use SimplePhp\Ir\ConstantNode;
 use SimplePhp\Ir\ControlNode;
 use SimplePhp\Ir\DataNode;
@@ -10,6 +14,7 @@ use SimplePhp\Ir\DivNode;
 use SimplePhp\Ir\MulNode;
 use SimplePhp\Ir\NegNode;
 use SimplePhp\Ir\Node;
+use SimplePhp\Ir\NotNode;
 use SimplePhp\Ir\ReturnNode;
 use SimplePhp\Ir\StartNode;
 use SimplePhp\Ir\SubNode;
@@ -23,6 +28,7 @@ class Parser
     private Lexer $lexer;
     private SymbolTable $symbolTable;
     private ?ControlNode $ctrl = null;
+    private ?DataNode $arg = null;
 
     public function __construct(string $code)
     {
@@ -31,20 +37,24 @@ class Parser
         $this->symbolTable = new SymbolTable();
     }
 
-    public function parse(): StartNode
+    public function parse(?Type $argType = null): StartNode
     {
         $start = new StartNode();
         self::$start = $start;
         $this->ctrl = $start;
+        $this->arg = (new ArgNode($start, $argType))->peephole();
+        $this->symbolTable->pushScope();
+        $this->symbolTable->declare('arg', $this->arg);
         $this->parseProgram();
         $this->consume(TokenKind::Eof);
+        $this->symbolTable->popScope();
+        $this->symbolTable->kill();
         return $start;
     }
 
     private function parseProgram(): void
     {
         $this->parseBlock();
-        $this->symbolTable->kill();
     }
 
     private function parseBlock(): void
@@ -106,7 +116,37 @@ class Parser
 
     private function parseExpression(): DataNode
     {
-        return $this->parseAddSub();
+        return $this->parseComparison();
+    }
+
+    private function parseComparison(): DataNode
+    {
+        $lhs = $this->parseAddSub();
+        while (true) {
+            $current = $this->lexer->current();
+            if ($current->kind === TokenKind::EqualsEquals) {
+                $this->lexer->next();
+                $lhs = (new CompNode(CompKind::Equal, $lhs, $this->parseAddSub()))->peephole();
+            } else if ($current->kind === TokenKind::AngleLeft) {
+                $this->lexer->next();
+                $lhs = (new CompNode(CompKind::Lower, $lhs, $this->parseAddSub()))->peephole();
+            } else if ($current->kind === TokenKind::AngleLeftEquals) {
+                $this->lexer->next();
+                $lhs = (new CompNode(CompKind::LowerEqual, $lhs, $this->parseAddSub()))->peephole();
+            } else if ($current->kind === TokenKind::AngleRight) {
+                $this->lexer->next();
+                $lhs = (new CompNode(CompKind::Lower, $this->parseAddSub(), $lhs))->peephole();
+            } else if ($current->kind === TokenKind::AngleRightEquals) {
+                $this->lexer->next();
+                $lhs = (new CompNode(CompKind::LowerEqual, $this->parseAddSub(), $lhs))->peephole();
+            } else if ($current->kind === TokenKind::ExclamationMarkEquals) {
+                $this->lexer->next();
+                $lhs = (new NotNode((new CompNode(CompKind::Equal, $lhs, $this->parseAddSub()))->peephole()))->peephole();
+            } else {
+                break;
+            }
+        }
+        return $lhs;
     }
 
     private function parseAddSub(): DataNode

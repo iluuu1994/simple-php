@@ -25,4 +25,9 @@ class ConstantNode extends DataNode
     {
         return 'Constant ' . $this->value;
     }
+
+    public function print(): string
+    {
+        return (string) $this->value;
+    }
 }

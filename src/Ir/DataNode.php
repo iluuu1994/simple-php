@@ -19,12 +19,24 @@ abstract class DataNode extends Node
         }
 
         $type = $this->infer();
-
         if ($type instanceof ConstantType) {
             $this->kill();
             return (new ConstantNode(Parser::getStart(), $type->value))->peephole();
         }
 
+        $idealized = $this->idealize();
+        if ($idealized !== null) {
+            $this->kill();
+            return $idealized->peephole();
+        }
+
         return $this;
     }
+
+    public function idealize(): ?self
+    {
+        return null;
+    }
+
+    public abstract function print(): string;
 }

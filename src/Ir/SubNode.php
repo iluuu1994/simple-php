@@ -6,6 +6,9 @@ use SimplePhp\Inference\BotType;
 use SimplePhp\Inference\ConstantType;
 use SimplePhp\Inference\Type;
 
+/**
+ * @property array{0: DataNode, 1: DataNode} $inputs
+ */
 class SubNode extends DataNode
 {
     public function __construct(DataNode $lhs, DataNode $rhs)
@@ -15,12 +18,8 @@ class SubNode extends DataNode
 
     public function infer(): Type
     {
-        $lhs = $this->inputs[0];
-        $rhs = $this->inputs[1];
-        assert($lhs instanceof DataNode);
-        assert($rhs instanceof DataNode);
-        $lhsType = $lhs->infer();
-        $rhsType = $rhs->infer();
+        $lhsType = $this->inputs[0]->infer();
+        $rhsType = $this->inputs[1]->infer();
 
         if ($lhsType instanceof ConstantType && $rhsType instanceof ConstantType) {
             return new ConstantType($lhsType->value - $rhsType->value);
@@ -32,5 +31,10 @@ class SubNode extends DataNode
     public function __toString(): string
     {
         return 'Sub';
+    }
+
+    public function print(): string
+    {
+        return '(' . $this->inputs[0]->print() . ' - ' . $this->inputs[1]->print() . ')';
     }
 }

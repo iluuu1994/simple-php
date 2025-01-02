@@ -111,12 +111,73 @@ class Lexer
             '}' => TokenKind::CurlyRight,
             '=' => TokenKind::Equals,
         ];
-        $char = $this->code[$this->position];
-        if (!isset($symbols[$char])) {
-            return null;
+        $char = $this->code[$this->position++];
+        switch ($char) {
+            case ';':
+                $kind = TokenKind::Semicolon;
+                break;
+            case '+':
+                $kind = TokenKind::Plus;
+                break;
+            case '-':
+                $kind = TokenKind::Minus;
+                break;
+            case '/':
+                $kind = TokenKind::Slash;
+                break;
+            case '*':
+                $kind = TokenKind::Asterisk;
+                break;
+            case '(':
+                $kind = TokenKind::ParenLeft;
+                break;
+            case ')':
+                $kind = TokenKind::ParenRight;
+                break;
+            case '{':
+                $kind = TokenKind::CurlyLeft;
+                break;
+            case '}':
+                $kind = TokenKind::CurlyRight;
+                break;
+            case '=':
+                if ($this->position < strlen($this->code) && $this->code[$this->position] === '=') {
+                    $kind = TokenKind::EqualsEquals;
+                    $this->position++;
+                } else {
+                    $kind = TokenKind::Equals;
+                }
+                break;
+            case '<':
+                if ($this->position < strlen($this->code) && $this->code[$this->position] === '=') {
+                    $kind = TokenKind::AngleLeftEquals;
+                    $this->position++;
+                } else {
+                    $kind = TokenKind::AngleLeft;
+                }
+                break;
+            case '>':
+                if ($this->position < strlen($this->code) && $this->code[$this->position] === '=') {
+                    $kind = TokenKind::AngleRightEquals;
+                    $this->position++;
+                } else {
+                    $kind = TokenKind::AngleRight;
+                }
+                break;
+            case '!':
+                if ($this->position < strlen($this->code) && $this->code[$this->position] === '=') {
+                    $kind = TokenKind::ExclamationMarkEquals;
+                    $this->position++;
+                } else {
+                    $this->position--;
+                    return null;
+                }
+                break;
+            default:
+                $this->position--;
+                return null;
         }
-        $this->position++;
-        return new Token($symbols[$char]);
+        return new Token($kind);
     }
 
     private function lexIdentifier(): ?Token
