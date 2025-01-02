@@ -44,6 +44,7 @@ class Parser
     private function parseProgram(): void
     {
         $this->parseBlock();
+        $this->symbolTable->kill();
     }
 
     private function parseBlock(): void

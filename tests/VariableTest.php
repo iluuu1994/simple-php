@@ -109,4 +109,21 @@ describe('variable', function () {
     test('unclosed scope', function () {
         (new Parser('var a = 1; var b = 2; var c = 0; { var b = 3; c = a + b;'))->parse();
     })->throws(\Exception::class, 'Unexpected token Eof, expected CurlyRight');
+
+    test('nested scopes', function () {
+        $mermaid = new Mermaid();
+        $node = (new Parser('var a = 1; { var b = a; } return a;'))->parse();
+        expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
+        graph TD
+          subgraph Data
+            1[Constant 1]
+          end
+          subgraph Control
+            0[Start]
+            2[Return]
+          end
+          0 --> 2
+          1 --> 2
+        MERMAID);
+    });
 });

@@ -2,9 +2,11 @@
 
 namespace SimplePhp\Ir;
 
+use SimplePhp\UnexpectedError;
+
 abstract class Node
 {
-    private static int $counter = 0;
+    protected static int $counter = 0;
 
     public int $id;
 
@@ -55,10 +57,17 @@ abstract class Node
 
     public function removeOutput(Node $node): void
     {
-        $this->outputs = array_values(array_filter($this->outputs, fn ($output) => $output !== $node));
-        if (!$this->isUsed()) {
-            $this->kill();
+        foreach ($this->outputs as $i => $output) {
+            if ($output === $node) {
+                array_splice($this->outputs, $i, 1);
+                if (!$this->isUsed()) {
+                    $this->kill();
+                }
+                return;
+            }
         }
+
+        throw new UnexpectedError('Output was not present');
     }
 
     public function isUsed(): bool
