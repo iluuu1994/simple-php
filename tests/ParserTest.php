@@ -38,16 +38,16 @@ describe('parser', function () {
           subgraph Data
             1[Constant 1]
             2[Constant 2]
-            3[Add]
+            4[Add]
           end
           subgraph Control
             0[Start]
-            4[Return]
+            3[Return]
           end
-          0 --> 4
-          3 --> 4
-          1 --> 3
-          2 --> 3
+          0 --> 3
+          4 --> 3
+          1 --> 4
+          2 --> 4
         MERMAID);
     });
 
@@ -74,20 +74,20 @@ describe('parser', function () {
           subgraph Data
             1[Constant 1]
             2[Constant 2]
-            4[Constant 3]
-            3[Sub]
+            3[Constant 3]
+            6[Sub]
             5[Sub]
           end
           subgraph Control
             0[Start]
-            6[Return]
+            4[Return]
           end
-          0 --> 6
-          5 --> 6
-          1 --> 3
-          2 --> 3
+          0 --> 4
+          5 --> 4
+          1 --> 6
+          2 --> 6
+          6 --> 5
           3 --> 5
-          4 --> 5
         MERMAID);
     });
 
@@ -100,18 +100,18 @@ describe('parser', function () {
             2[Constant 2]
             3[Constant 3]
             5[Sub]
-            4[Sub]
+            6[Sub]
           end
           subgraph Control
             0[Start]
-            6[Return]
+            4[Return]
           end
-          0 --> 6
-          5 --> 6
+          0 --> 4
+          5 --> 4
           1 --> 5
-          4 --> 5
-          2 --> 4
-          3 --> 4
+          6 --> 5
+          2 --> 6
+          3 --> 6
         MERMAID);
     });
 
@@ -123,29 +123,29 @@ describe('parser', function () {
             1[Constant 1]
             2[Constant 2]
             3[Constant 3]
-            6[Constant 4]
-            7[Constant 5]
-            5[Add]
-            4[Mul]
-            9[Div]
-            8[Neg]
-            10[Sub]
+            4[Constant 4]
+            5[Constant 5]
+            8[Add]
+            9[Mul]
+            10[Div]
+            11[Neg]
+            7[Sub]
           end
           subgraph Control
             0[Start]
-            11[Return]
+            6[Return]
           end
-          0 --> 11
-          10 --> 11
-          1 --> 5
-          4 --> 5
-          2 --> 4
-          3 --> 4
-          6 --> 9
-          8 --> 9
-          7 --> 8
-          5 --> 10
-          9 --> 10
+          0 --> 6
+          7 --> 6
+          1 --> 8
+          9 --> 8
+          2 --> 9
+          3 --> 9
+          4 --> 10
+          11 --> 10
+          5 --> 11
+          8 --> 7
+          10 --> 7
         MERMAID);
     });
 });

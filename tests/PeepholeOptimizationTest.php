@@ -11,14 +11,14 @@ describe('peephole', function () {
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
-            15[Constant 9]
+            1[Constant 9]
           end
           subgraph Control
             0[Start]
-            16[Return]
+            2[Return]
           end
-          0 --> 16
-          15 --> 16
+          0 --> 2
+          1 --> 2
         MERMAID);
     });
 });

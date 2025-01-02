@@ -17,14 +17,19 @@ class Mermaid
         $controlNodes = '';
         $edges = '';
 
+        $idCounter = 0;
+        $ids = [];
+
         while (count($worklist)) {
             $node = array_shift($worklist);
 
+            $id = $ids[$node->id] ?? ($ids[$node->id] = $idCounter++);
+
             if ($node instanceof DataNode) {
-                $dataNodes .= '    ' . $node->id . '[' . $node . "]\n";
+                $dataNodes .= '    ' . $id . '[' . $node . "]\n";
             } else {
                 assert($node instanceof ControlNode);
-                $controlNodes .= '    ' . $node->id . '[' . $node . "]\n";
+                $controlNodes .= '    ' . $id . '[' . $node . "]\n";
             }
 
             foreach ($node->outputs as $output) {
@@ -38,7 +43,8 @@ class Mermaid
             foreach ($node->inputs as $input) {
                 /* Skip fake data edges. */
                 if ($input && !($input instanceof StartNode && $node instanceof DataNode)) {
-                    $edges .= '  ' . $input->id . ' --> ' . $node->id . "\n";
+                    $inputId = $ids[$input->id] ?? ($ids[$input->id] = $idCounter++);
+                    $edges .= '  ' . $inputId . ' --> ' . $id . "\n";
                 }
 
             }

@@ -28,14 +28,14 @@ describe('variable', function () {
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
-            4[Constant 3]
+            1[Constant 3]
           end
           subgraph Control
             0[Start]
-            5[Return]
+            2[Return]
           end
-          0 --> 5
-          4 --> 5
+          0 --> 2
+          1 --> 2
         MERMAID);
     });
 
@@ -45,14 +45,14 @@ describe('variable', function () {
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
-            6[Constant 4]
+            1[Constant 4]
           end
           subgraph Control
             0[Start]
-            7[Return]
+            2[Return]
           end
-          0 --> 7
-          6 --> 7
+          0 --> 2
+          1 --> 2
         MERMAID);
     });
 
@@ -65,17 +65,17 @@ describe('variable', function () {
         graph TD
           subgraph Data
             1[Constant 1]
-            4[Constant 3]
-            5[Add]
+            2[Constant 3]
+            4[Add]
           end
           subgraph Control
             0[Start]
-            6[Return]
+            3[Return]
           end
-          0 --> 6
-          5 --> 6
-          1 --> 5
-          4 --> 5
+          0 --> 3
+          4 --> 3
+          1 --> 4
+          2 --> 4
         MERMAID);
     });
 
@@ -91,14 +91,14 @@ describe('variable', function () {
         expect($mermaid->buildGraph($node))->toBe(<<<MERMAID
         graph TD
           subgraph Data
-            18[Constant 8]
+            1[Constant 8]
           end
           subgraph Control
             0[Start]
-            19[Return]
+            2[Return]
           end
-          0 --> 19
-          18 --> 19
+          0 --> 2
+          1 --> 2
         MERMAID);
     });
 

@@ -12,10 +12,6 @@ class SymbolTable extends Node
     public function __construct()
     {
         parent::__construct([]);
-
-        /* FIXME: Kind of ugly, but we don't care about the ID for the symbol table node. */
-        $this->id = -1;
-        self::$counter--;
     }
 
     public function pushScope(): void
