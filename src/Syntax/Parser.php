@@ -126,32 +126,51 @@ class Parser
         $cond = $this->parseExpression();
         $this->consume(TokenKind::ParenRight);
         $origCtrl = $this->getCtrl();
+        $origSymbolTable = clone $this->symbolTable;
         $if = new IfNode($origCtrl, $cond);
 
         $this->ctrl = new BranchNode($if, 'True');
         $this->parseStatement();
         $tCtrl = $this->ctrl;
+        $tSymbolTable = $this->symbolTable;
 
         if ($this->lexer->current()->kind === TokenKind::Else) {
             $this->consume(TokenKind::Else);
             $this->ctrl = new BranchNode($if, 'False');
+            $this->symbolTable = $origSymbolTable;
             $this->parseStatement();
             $fCtrl = $this->ctrl;
 
             if ($tCtrl === null && $fCtrl === null) {
                 /* Both branches returned, we're done. */
+                $tSymbolTable->kill();
+                $origSymbolTable->kill();
             } else if ($tCtrl === null) {
                 $this->ctrl = $fCtrl;
+                $this->symbolTable = $origSymbolTable;
+                $tSymbolTable->kill();
             } else if ($fCtrl === null) {
                 $this->ctrl = $tCtrl;
+                $this->symbolTable = $tSymbolTable;
+                $origSymbolTable->kill();
             } else {
-                $this->ctrl = new MergeNode([$tCtrl, $fCtrl]);
+                $merge = new MergeNode([$tCtrl, $fCtrl]);
+                $this->ctrl = $merge;
+                $this->symbolTable = SymbolTable::merged($tSymbolTable, $origSymbolTable, $merge);
+                $tSymbolTable->kill();
+                $origSymbolTable->kill();
             }
         } else {
             if ($tCtrl) {
-                $this->ctrl = new MergeNode([$tCtrl, $origCtrl]);
+                $merge = new MergeNode([$tCtrl, $origCtrl]);
+                $this->ctrl = $merge;
+                $this->symbolTable = SymbolTable::merged($tSymbolTable, $origSymbolTable, $merge);
+                $tSymbolTable->kill();
+                $origSymbolTable->kill();
             } else {
                 $this->ctrl = new BranchNode($if, 'False');
+                $this->symbolTable = $origSymbolTable;
+                $tSymbolTable->kill();
             }
         }
     }

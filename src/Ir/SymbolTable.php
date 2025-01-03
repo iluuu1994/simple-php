@@ -9,6 +9,8 @@ class SymbolTable extends Node
     /** @var array<int, array<string, DataNode>> */
     private array $scopes = [];
 
+    private bool $dead = false;
+
     public function __construct()
     {
         parent::__construct([]);
@@ -16,11 +18,18 @@ class SymbolTable extends Node
 
     public function pushScope(): void
     {
+        assert(!$this->dead);
         $this->scopes[] = [];
     }
 
     public function popScope(): void
     {
+        /* Keep dead symbol tables linked to avoid null checks, but they must be
+         * replaced before adding more elements. */
+        if ($this->dead) {
+            assert(empty($this->scopes));
+            return;
+        }
         assert(!empty($this->scopes));
         $scope = array_pop($this->scopes);
         foreach ($scope as $node) {
@@ -80,8 +89,48 @@ class SymbolTable extends Node
         throw new UnexpectedError('Input was not present');
     }
 
+    public function kill(): void
+    {
+        parent::kill();
+        $this->inputs = [];
+        $this->scopes = [];
+        $this->dead = true;
+    }
+
     public function __toString(): string
     {
         throw new UnexpectedError('Should be removed from the graph before printing');
+    }
+
+    public function __clone()
+    {
+        foreach ($this->inputs as $input) {
+            $input->outputs[] = $this;
+        }
+    }
+
+    public static function merged(self $lhs, self $rhs, MergeNode $mergeNode): self
+    {
+        assert(count($lhs->scopes) === count($rhs->scopes));
+
+        $new = new self();
+
+        foreach ($lhs->scopes as $i => $lhsScope) {
+            $rhsScope = $rhs->scopes[$i];
+            assert(count($lhsScope) === count($rhsScope));
+
+            $new->pushScope();
+
+            foreach ($lhsScope as $name => $lhsNode) {
+                $rhsNode = $rhsScope[$name];
+                if ($lhsNode === $rhsNode) {
+                    $new->declare($name, $lhsNode);
+                } else {
+                    $new->declare($name, new PhiNode($mergeNode, [$lhsNode, $rhsNode]));
+                }
+            }
+        }
+
+        return $new;
     }
 }

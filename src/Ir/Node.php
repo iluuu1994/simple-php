@@ -10,13 +10,13 @@ abstract class Node
 
     public int $id;
 
-    /** @var list<Node|null> */
+    /** @var list<Node> */
     public array $inputs;
 
     /** @var list<Node> */
     public array $outputs;
 
-    /** @param list<Node|null> $inputs */
+    /** @param list<Node> $inputs */
     public function __construct(array $inputs)
     {
         $this->id = self::$counter++;
@@ -24,9 +24,7 @@ abstract class Node
         $this->outputs = [];
 
         foreach ($this->inputs as $input) {
-            if ($input !== null) {
-                $input->outputs[] = $this;
-            }
+            $input->outputs[] = $this;
         }
     }
 
@@ -49,9 +47,7 @@ abstract class Node
         assert(!$this->isUsed());
 
         foreach ($this->inputs as $input) {
-            if ($input !== null) {
-                $input->removeOutput($this);
-            }
+            $input->removeOutput($this);
         }
     }
 
@@ -67,7 +63,7 @@ abstract class Node
             }
         }
 
-        throw new UnexpectedError('Output was not present');
+        throw new UnexpectedError('Output ' . $node->id . ' was not present in ' . $this->id);
     }
 
     public function isUsed(): bool

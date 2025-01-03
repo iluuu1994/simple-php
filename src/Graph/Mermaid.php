@@ -42,7 +42,7 @@ class Mermaid
             /* For edges, iterate inputs rather than outputs to maintain input order. */
             foreach ($node->inputs as $input) {
                 /* Skip fake data edges. */
-                if ($input && !($input instanceof StartNode && $node instanceof DataNode)) {
+                if (!($input instanceof StartNode && $node instanceof DataNode)) {
                     $inputId = $ids[$input->id] ?? ($ids[$input->id] = $idCounter++);
                     $edges .= '  ' . $inputId . ' --> ' . $id . "\n";
                 }
