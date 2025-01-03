@@ -17,8 +17,7 @@ describe('variable', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 
@@ -34,8 +33,7 @@ describe('variable', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 
@@ -51,8 +49,7 @@ describe('variable', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 
@@ -72,10 +69,8 @@ describe('variable', function () {
             0[Start]
             3[Return]
           end
-          0 --> 3
-          4 --> 3
-          1 --> 4
-          2 --> 4
+          0 & 4 --> 3
+          1 & 2 --> 4
         MERMAID);
     });
 
@@ -97,8 +92,7 @@ describe('variable', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 
@@ -122,8 +116,7 @@ describe('variable', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 });

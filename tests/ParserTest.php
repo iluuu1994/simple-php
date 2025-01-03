@@ -26,8 +26,7 @@ describe('parser', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 
@@ -44,10 +43,8 @@ describe('parser', function () {
             0[Start]
             3[Return]
           end
-          0 --> 3
-          4 --> 3
-          1 --> 4
-          2 --> 4
+          0 & 4 --> 3
+          1 & 2 --> 4
         MERMAID);
     });
 
@@ -62,8 +59,7 @@ describe('parser', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 
@@ -82,12 +78,9 @@ describe('parser', function () {
             0[Start]
             4[Return]
           end
-          0 --> 4
-          5 --> 4
-          1 --> 6
-          2 --> 6
-          6 --> 5
-          3 --> 5
+          0 & 5 --> 4
+          1 & 2 --> 6
+          6 & 3 --> 5
         MERMAID);
     });
 
@@ -106,12 +99,9 @@ describe('parser', function () {
             0[Start]
             4[Return]
           end
-          0 --> 4
-          5 --> 4
-          1 --> 5
-          6 --> 5
-          2 --> 6
-          3 --> 6
+          0 & 5 --> 4
+          1 & 6 --> 5
+          2 & 3 --> 6
         MERMAID);
     });
 
@@ -135,17 +125,12 @@ describe('parser', function () {
             0[Start]
             6[Return]
           end
-          0 --> 6
-          7 --> 6
-          1 --> 8
-          9 --> 8
-          2 --> 9
-          3 --> 9
-          4 --> 10
-          11 --> 10
+          0 & 7 --> 6
+          1 & 9 --> 8
+          2 & 3 --> 9
+          4 & 11 --> 10
           5 --> 11
-          8 --> 7
-          10 --> 7
+          8 & 10 --> 7
         MERMAID);
     });
 });

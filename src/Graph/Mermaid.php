@@ -15,7 +15,7 @@ class Mermaid
 
         $dataNodes = '';
         $controlNodes = '';
-        $edges = '';
+        $edgesMap = [];
 
         $idCounter = 0;
         $ids = [];
@@ -44,10 +44,15 @@ class Mermaid
                 /* Skip fake data edges. */
                 if (!($input instanceof StartNode && $node instanceof DataNode)) {
                     $inputId = $ids[$input->id] ?? ($ids[$input->id] = $idCounter++);
-                    $edges .= '  ' . $inputId . ' --> ' . $id . "\n";
+                    $edgesMap[$id][] = $inputId;
                 }
 
             }
+        }
+
+        $edges = '';
+        foreach ($edgesMap as $to => $from) {
+            $edges .= '  ' . implode(' & ', $from) . ' --> ' . $to . "\n";
         }
 
         $dataNodes = trim($dataNodes);

@@ -17,8 +17,7 @@ describe('peephole', function () {
             0[Start]
             2[Return]
           end
-          0 --> 2
-          1 --> 2
+          0 & 1 --> 2
         MERMAID);
     });
 });
