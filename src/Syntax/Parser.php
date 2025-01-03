@@ -5,12 +5,15 @@ namespace SimplePhp\Syntax;
 use SimplePhp\Inference\Type;
 use SimplePhp\Ir\AddNode;
 use SimplePhp\Ir\ArgNode;
+use SimplePhp\Ir\BranchNode;
 use SimplePhp\Ir\CompKind;
 use SimplePhp\Ir\CompNode;
 use SimplePhp\Ir\ConstantNode;
 use SimplePhp\Ir\ControlNode;
 use SimplePhp\Ir\DataNode;
 use SimplePhp\Ir\DivNode;
+use SimplePhp\Ir\IfNode;
+use SimplePhp\Ir\MergeNode;
 use SimplePhp\Ir\MulNode;
 use SimplePhp\Ir\NegNode;
 use SimplePhp\Ir\Node;
@@ -87,6 +90,8 @@ class Parser
             $this->consume(TokenKind::CurlyRight);
         } else if ($current->kind === TokenKind::Var) {
             $this->parseVarDecl();
+        } else if ($current->kind === TokenKind::If) {
+            $this->parseIfElse();
         } else {
             $this->parseExpressionStatement();
         }
@@ -112,6 +117,43 @@ class Parser
         $this->consume(TokenKind::Semicolon);
 
         $this->symbolTable->declare($identifier->name, $expr);
+    }
+
+    private function parseIfElse(): void
+    {
+        $this->consume(TokenKind::If);
+        $this->consume(TokenKind::ParenLeft);
+        $cond = $this->parseExpression();
+        $this->consume(TokenKind::ParenRight);
+        $origCtrl = $this->getCtrl();
+        $if = new IfNode($origCtrl, $cond);
+
+        $this->ctrl = new BranchNode($if, 'True');
+        $this->parseStatement();
+        $tCtrl = $this->ctrl;
+
+        if ($this->lexer->current()->kind === TokenKind::Else) {
+            $this->consume(TokenKind::Else);
+            $this->ctrl = new BranchNode($if, 'False');
+            $this->parseStatement();
+            $fCtrl = $this->ctrl;
+
+            if ($tCtrl === null && $fCtrl === null) {
+                /* Both branches returned, we're done. */
+            } else if ($tCtrl === null) {
+                $this->ctrl = $fCtrl;
+            } else if ($fCtrl === null) {
+                $this->ctrl = $tCtrl;
+            } else {
+                $this->ctrl = new MergeNode([$tCtrl, $fCtrl]);
+            }
+        } else {
+            if ($tCtrl) {
+                $this->ctrl = new MergeNode([$tCtrl, $origCtrl]);
+            } else {
+                $this->ctrl = new BranchNode($if, 'False');
+            }
+        }
     }
 
     private function parseExpression(): DataNode

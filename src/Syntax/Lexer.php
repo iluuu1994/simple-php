@@ -62,6 +62,8 @@ class Lexer
     private function lexKeywords(): ?Token
     {
         $keywords = [
+            ['else', TokenKind::Else],
+            ['if', TokenKind::If],
             ['return', TokenKind::Return_],
             ['var', TokenKind::Var],
         ];
@@ -99,18 +101,6 @@ class Lexer
 
     private function lexSymbols(): ?Token
     {
-        $symbols = [
-            ';' => TokenKind::Semicolon,
-            '+' => TokenKind::Plus,
-            '-' => TokenKind::Minus,
-            '/' => TokenKind::Slash,
-            '*' => TokenKind::Asterisk,
-            '(' => TokenKind::ParenLeft,
-            ')' => TokenKind::ParenRight,
-            '{' => TokenKind::CurlyLeft,
-            '}' => TokenKind::CurlyRight,
-            '=' => TokenKind::Equals,
-        ];
         $char = $this->code[$this->position++];
         switch ($char) {
             case ';':

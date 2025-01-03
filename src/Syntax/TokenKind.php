@@ -11,10 +11,13 @@ enum TokenKind
     case Asterisk;
     case CurlyLeft;
     case CurlyRight;
+    case Else;
     case Eof;
     case Equals;
     case EqualsEquals;
+    case ExclamationMarkEquals;
     case Identifier;
+    case If;
     case Integer;
     case Minus;
     case ParenLeft;
@@ -25,5 +28,4 @@ enum TokenKind
     case Slash;
     case Var;
     case Whitespace;
-    case ExclamationMarkEquals;
 }
