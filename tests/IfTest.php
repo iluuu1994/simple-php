@@ -36,6 +36,15 @@ describe('variable', function () {
         }
         return x;
         CODE))
+        ->toBe($test(<<<CODE
+        var x = 1;
+        var y = 2;
+        if (arg) {
+            return x;
+        } else {
+        }
+        return y;
+        CODE))
         ->toBe(<<<MERMAID
         graph TD
           subgraph Data
