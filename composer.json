@@ -12,7 +12,8 @@
     },
     "require-dev": {
         "pestphp/pest": "^3.7",
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "friendsofphp/php-cs-fixer": "^3.65"
     },
     "config": {
         "allow-plugins": {
@@ -20,9 +21,14 @@
         }
     },
     "scripts": {
+        "php-cs-fixer": [
+          "@putenv PHP_CS_FIXER_IGNORE_ENV=1",
+          "@php vendor/bin/php-cs-fixer fix"
+        ],
         "phpstan": ["@php vendor/bin/phpstan analyze"],
         "pest": ["@php vendor/bin/pest"],
         "test": [
+            "@composer php-cs-fixer",
             "@composer phpstan",
             "@composer pest"
         ]

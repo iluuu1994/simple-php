@@ -2,6 +2,4 @@
 
 namespace SimplePhp\Inference;
 
-class BotType extends Type
-{
-}
+class BotType extends Type {}

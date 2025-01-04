@@ -46,7 +46,6 @@ class Mermaid
                     $inputId = $ids[$input->id] ?? ($ids[$input->id] = $idCounter++);
                     $edgesMap[$id][] = $inputId;
                 }
-
             }
         }
 

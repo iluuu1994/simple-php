@@ -3,7 +3,6 @@
 namespace SimplePhp\Ir;
 
 use SimplePhp\Inference\BotType;
-use SimplePhp\Inference\ConstantType;
 use SimplePhp\Inference\Type;
 
 class PhiNode extends DataNode

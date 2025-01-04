@@ -98,11 +98,11 @@ describe('variable', function () {
 
     test('self assign', function () {
         (new Parser('var a = a; return a;'))->parse();
-    })->throws(\Exception::class, 'Undeclared identifier a');
+    })->throws(Exception::class, 'Undeclared identifier a');
 
     test('unclosed scope', function () {
         (new Parser('var a = 1; var b = 2; var c = 0; { var b = 3; c = a + b;'))->parse();
-    })->throws(\Exception::class, 'Unexpected token Eof, expected CurlyRight');
+    })->throws(Exception::class, 'Unexpected token Eof, expected CurlyRight');
 
     test('nested scopes', function () {
         $mermaid = new Mermaid();

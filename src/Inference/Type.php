@@ -2,6 +2,4 @@
 
 namespace SimplePhp\Inference;
 
-abstract class Type
-{
-}
+abstract class Type {}

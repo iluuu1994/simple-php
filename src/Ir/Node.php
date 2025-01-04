@@ -76,5 +76,5 @@ abstract class Node
         self::$counter = 0;
     }
 
-    public abstract function __toString(): string;
+    abstract public function __toString(): string;
 }

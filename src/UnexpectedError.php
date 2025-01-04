@@ -2,6 +2,4 @@
 
 namespace SimplePhp;
 
-class UnexpectedError extends \Error
-{
-}
+class UnexpectedError extends \Error {}

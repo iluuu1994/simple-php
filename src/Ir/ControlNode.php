@@ -2,6 +2,4 @@
 
 namespace SimplePhp\Ir;
 
-abstract class ControlNode extends Node
-{
-}
+abstract class ControlNode extends Node {}

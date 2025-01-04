@@ -9,7 +9,7 @@ abstract class DataNode extends Node
 {
     public static bool $enablePeepholeOptimization = true;
 
-    public abstract function infer(): Type;
+    abstract public function infer(): Type;
 
     public function peephole(): self
     {
@@ -37,5 +37,5 @@ abstract class DataNode extends Node
         return null;
     }
 
-    public abstract function print(): string;
+    abstract public function print(): string;
 }
