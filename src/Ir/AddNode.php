@@ -45,7 +45,7 @@ class AddNode extends DataNode
 
         /* node + node becomes node * 2. */
         if ($lhs === $rhs) {
-            return new MulNode($lhs, (new ConstantNode(Parser::getStart(), 2))->peephole());
+            return new MulNode($lhs, (new ConstantNode(2))->peephole());
         }
 
         /* Pull adds to the left. */

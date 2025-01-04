@@ -4,15 +4,16 @@ namespace SimplePhp\Ir;
 
 use SimplePhp\Inference\ConstantType;
 use SimplePhp\Inference\Type;
+use SimplePhp\Syntax\Parser;
 
 class ConstantNode extends DataNode
 {
     public static ?StartNode $startNode = null;
 
     public function __construct(
-        public StartNode $start,
         public readonly int $value,
     ) {
+        $start = Parser::getStart();
         parent::__construct([$start]);
     }
 

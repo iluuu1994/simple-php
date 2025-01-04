@@ -21,7 +21,7 @@ abstract class DataNode extends Node
         $type = $this->infer();
         if ($type instanceof ConstantType) {
             $this->kill();
-            return (new ConstantNode(Parser::getStart(), $type->value))->peephole();
+            return (new ConstantNode($type->value))->peephole();
         }
 
         $idealized = $this->idealize();

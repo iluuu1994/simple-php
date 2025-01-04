@@ -252,7 +252,7 @@ class Parser
         if ($current->kind === TokenKind::Integer) {
             assert($current instanceof IntegerToken);
             $this->lexer->next();
-            return (new ConstantNode(self::$start ?? throw new UnexpectedError(), $current->value))->peephole();
+            return (new ConstantNode($current->value))->peephole();
         } else if ($current->kind === TokenKind::ParenLeft) {
             $this->lexer->next();
             $expr = $this->parseExpression();

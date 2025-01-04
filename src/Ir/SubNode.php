@@ -28,6 +28,21 @@ class SubNode extends DataNode
         return new BotType();
     }
 
+    public function idealize(): ?DataNode
+    {
+        $lhsType = $this->inputs[0]->infer();
+        $rhsType = $this->inputs[1]->infer();
+
+        /* Turn a - 1 to a + (-1), which will encourage folding. */
+        if ($lhsType instanceof ConstantType) {
+            return new AddNode(new ConstantNode(-$lhsType->value), $this->inputs[1]);
+        } else if ($rhsType instanceof ConstantType) {
+            return new AddNode($this->inputs[0], new ConstantNode(-$rhsType->value));
+        } else {
+            return null;
+        }
+    }
+
     public function __toString(): string
     {
         return 'Sub';

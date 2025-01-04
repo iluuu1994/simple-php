@@ -1,5 +1,6 @@
 <?php
 
+use SimplePhp\Graph\Code;
 use SimplePhp\Graph\Mermaid;
 use SimplePhp\Syntax\Parser;
 
@@ -19,5 +20,12 @@ describe('peephole', function () {
           end
           0 & 1 --> 2
         MERMAID);
+    });
+
+    test('a - 1 to a + (-1)', function () {
+        $code = new Code();
+
+        $node = (new Parser('return arg - 1 + 2;'))->parse();
+        expect($code->print($node))->toBe('return (arg + 1);');
     });
 });
