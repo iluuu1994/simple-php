@@ -5,7 +5,6 @@ namespace SimplePhp\Ir;
 use SimplePhp\Inference\BotType;
 use SimplePhp\Inference\ConstantType;
 use SimplePhp\Inference\Type;
-use SimplePhp\Syntax\Parser;
 
 /**
  * @property array{0: DataNode, 1: DataNode} $inputs

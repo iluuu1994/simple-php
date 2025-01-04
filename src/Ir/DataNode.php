@@ -4,7 +4,6 @@ namespace SimplePhp\Ir;
 
 use SimplePhp\Inference\ConstantType;
 use SimplePhp\Inference\Type;
-use SimplePhp\Syntax\Parser;
 
 abstract class DataNode extends Node
 {
