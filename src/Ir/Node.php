@@ -16,6 +16,8 @@ abstract class Node
     /** @var list<Node> */
     public array $outputs;
 
+    protected bool $killed = false;
+
     /** @param list<Node> $inputs */
     public function __construct(array $inputs)
     {
@@ -45,6 +47,9 @@ abstract class Node
     public function kill(): void
     {
         assert(!$this->isUsed());
+        assert(!$this->killed);
+
+        $this->killed = true;
 
         foreach ($this->inputs as $input) {
             $input->removeOutput($this);
@@ -69,6 +74,33 @@ abstract class Node
     public function isUsed(): bool
     {
         return count($this->outputs) !== 0;
+    }
+
+    /** Keeps replacement alive while killing self. */
+    public function dce(Node $replacement): void
+    {
+        if ($this !== $replacement && !$this->isUsed()) {
+            $replacement->keep();
+            $this->kill();
+            $replacement->unkeep();
+        }
+    }
+
+    public function keep(): void
+    {
+        $this->outputs[] = DummyNode::get();
+    }
+
+    public function unkeep(): void
+    {
+        foreach ($this->outputs as $i => $output) {
+            if ($output instanceof DummyNode) {
+                array_splice($this->outputs, $i, 1);
+                return;
+            }
+        }
+
+        throw new UnexpectedError('Node was not kept');
     }
 
     public static function resetIds(): void

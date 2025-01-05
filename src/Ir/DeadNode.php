@@ -4,7 +4,7 @@ namespace SimplePhp\Ir;
 
 use SimplePhp\Inference\ControlType;
 
-class StartNode extends ControlNode
+class DeadNode extends ControlNode
 {
     public function __construct()
     {
@@ -13,11 +13,11 @@ class StartNode extends ControlNode
 
     public function infer(): ControlType
     {
-        return ControlType::alive();
+        return ControlType::dead();
     }
 
     public function __toString(): string
     {
-        return 'Start';
+        return 'Dead';
     }
 }

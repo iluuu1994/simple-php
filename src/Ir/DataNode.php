@@ -19,14 +19,16 @@ abstract class DataNode extends Node
 
         $type = $this->infer();
         if ($type instanceof ConstantType) {
-            $this->kill();
-            return (new ConstantNode($type->value))->peephole();
+            $new = (new ConstantNode($type->value))->peephole();
+            $this->dce($new);
+            return $new;
         }
 
         $idealized = $this->idealize();
         if ($idealized !== null) {
-            $this->kill();
-            return $idealized->peephole();
+            $idealized = $idealized->peephole();
+            $this->dce($idealized);
+            return $idealized;
         }
 
         return $this;

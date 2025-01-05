@@ -2,7 +2,6 @@
 
 namespace SimplePhp\Graph;
 
-use SimplePhp\Ir\DataNode;
 use SimplePhp\Ir\ReturnNode;
 use SimplePhp\Ir\StartNode;
 
@@ -15,7 +14,6 @@ class Code
         foreach ($node->outputs as $output) {
             if ($output instanceof ReturnNode) {
                 $expr = $output->inputs[1];
-                assert($expr instanceof DataNode);
                 $result .= 'return ' . $expr->print() . ';';
             }
         }

@@ -9,8 +9,6 @@ class SymbolTable extends Node
     /** @var array<int, array<string, DataNode>> */
     private array $scopes = [];
 
-    private bool $dead = false;
-
     public function __construct()
     {
         parent::__construct([]);
@@ -18,15 +16,15 @@ class SymbolTable extends Node
 
     public function pushScope(): void
     {
-        assert(!$this->dead);
+        assert(!$this->killed);
         $this->scopes[] = [];
     }
 
     public function popScope(): void
     {
-        /* Keep dead symbol tables linked to avoid null checks, but they must be
+        /* Keep killed symbol tables linked to avoid null checks, but they must be
          * replaced before adding more elements. */
-        if ($this->dead) {
+        if ($this->killed) {
             assert(empty($this->scopes));
             return;
         }
@@ -91,10 +89,11 @@ class SymbolTable extends Node
 
     public function kill(): void
     {
+        /* FIXME: Kind of ugly. Allow multiple kills. */
+        $this->killed = false;
         parent::kill();
         $this->inputs = [];
         $this->scopes = [];
-        $this->dead = true;
     }
 
     public function __toString(): string
